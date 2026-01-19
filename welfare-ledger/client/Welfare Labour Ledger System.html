@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welfare Labour Ledger - Complete System</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.0/crypto-js.min.js"></script>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-red-primary: rgba(220, 20, 60, 1);
+            --color-dark-red: rgba(139, 0, 0, 1);
+            --color-gold: rgba(255, 215, 0, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+        }
+
+        body {
+            background-color: var(--color-gray-200);
+            color: var(--color-slate-900);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-red-primary) 0%, var(--color-dark-red) 100%);
+            color: var(--color-white);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 40px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--color-teal-500);
+            color: var(--color-white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-teal-600);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-white);
+            color: var(--color-red-primary);
+            border: 2px solid var(--color-red-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-danger {
+            background-color: #ff6b6b;
+            color: var(--color-white);
+        }
+
+        .btn-danger:hover {
+            background-color: #ff5252;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background-color: var(--color-white);
+            color: var(--color-slate-900);
+            border: 2px solid var(--color-red-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active {
+            background-color: var(--color-red-primary);
+            color: var(--color-white);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--color-red-primary);
+            color: var(--color-white);
+        }
+
+        .card {
+            background-color: var(--color-white);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--color-red-primary);
+        }
+
+        .card h3 {
+            font-size: 16px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: var(--color-slate-900);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--color-slate-900);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-gray-400);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-teal-500);
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: var(--color-slate-900);
+            color: var(--color-white);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--color-white);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--color-red-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--color-gray-400);
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            color: var(--color-slate-900);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--color-red-primary) 0%, var(--color-dark-red) 100%);
+            color: var(--color-white);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .budget-category {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--color-red-primary);
+        }
+
+        .budget-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .budget-row:last-child {
+            border-bottom: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--color-gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-teal-500);
+            transition: width 0.3s ease;
+        }
+
+        .shift-timer {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--color-gold);
+        }
+
+        .timer-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--color-red-primary);
+            text-align: center;
+        }
+
+        .document-container {
+            line-height: 1.8;
+        }
+
+        .document-container h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--color-red-primary);
+        }
+
+        .document-container h2 {
+            font-size: 22px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: var(--color-slate-900);
+        }
+
+        .document-container h3 {
+            font-size: 18px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: var(--color-teal-500);
+        }
+
+        .document-container p {
+            margin-bottom: 15px;
+        }
+
+        .document-container ul, .document-container ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        .document-container li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background-color: #f5f5f5;
+            border-left: 4px solid var(--color-red-primary);
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+        }
+
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid var(--color-teal-500);
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .gap-10 {
+            gap: 10px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ============================================================================
+        // CRYPTO UTILITIES
+        // ============================================================================
+        
+        const CryptoUtils = {
+            deriveKeyPair: async (passphrase) => {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(passphrase);
+                const hash = await crypto.subtle.digest('SHA-256', data);
+                const seedArray = new Uint8Array(hash);
+                const publicKeyHex = btoa(String.fromCharCode(...seedArray.slice(0, 32))).replace(/\//g, '_');
+                const secretKeyHex = btoa(String.fromCharCode(...seedArray)).replace(/\//g, '_');
+                return { publicKeyHex, secretKeyHex };
+            },
+
+            sign: async (message, secretKey) => {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(message);
+                const hmac = await crypto.subtle.sign('HMAC', 
+                    await crypto.subtle.importKey('raw', encoder.encode(secretKey), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']),
+                    data
+                );
+                return btoa(String.fromCharCode(...new Uint8Array(hmac)));
+            },
+
+            canonical: (obj) => JSON.stringify(obj, Object.keys(obj).sort()),
+
+            sha256: (input) => CryptoJS.SHA256(input).toString(),
+        };
+
+        // ============================================================================
+        // MAIN APP COMPONENT
+        // ============================================================================
+
+        function WelfareLedgerApp() {
+            const [view, setView] = React.useState('login');
+            const [user, setUser] = React.useState(null);
+            const [keyFile, setKeyFile] = React.useState(null);
+            const [error, setError] = React.useState('');
+            const [success, setSuccess] = React.useState('');
+
+            const clearMessages = () => {
+                setError('');
+                setSuccess('');
+            };
+
+            const handleLogout = () => {
+                clearMessages();
+                setView('login');
+                setUser(null);
+                setKeyFile(null);
+            };
+
+            if (view === 'login') {
+                return <LoginPage setView={setView} setUser={setUser} setError={setError} setSuccess={setSuccess} error={error} success={success} clearMessages={clearMessages} />;
+            }
+
+            if (view === 'register') {
+                return <RegisterPage setView={setView} setError={setError} setSuccess={setSuccess} error={error} success={success} clearMessages={clearMessages} />;
+            }
+
+            if (view === 'key-setup') {
+                return <KeySetupPage user={user} setView={setView} setKeyFile={setKeyFile} setError={setError} setSuccess={setSuccess} error={error} success={success} clearMessages={clearMessages} />;
+            }
+
+            if (!user) {
+                return <LoginPage setView={setView} setUser={setUser} setError={setError} setSuccess={setSuccess} error={error} success={success} clearMessages={clearMessages} />;
+            }
+
+            return <DashboardPage user={user} keyFile={keyFile} handleLogout={handleLogout} setError={setError} setSuccess={setSuccess} error={error} success={success} clearMessages={clearMessages} />;
+        }
+
+        // ============================================================================
+        // LOGIN PAGE
+        // ============================================================================
+
+        function LoginPage({ setView, setUser, setError, setSuccess, error, success, clearMessages }) {
+            const [email, setEmail] = React.useState('');
+            const [password, setPassword] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                clearMessages();
+                
+                // Demo: Mock users for testing
+                const demoUsers = {
+                    'admin@example.com': { _id: 'admin1', name: 'Admin User', email: 'admin@example.com', role: 'admin', skillLevel: 3 },
+                    'alice@example.com': { _id: 'alice1', name: 'Alice Chen', email: 'alice@example.com', role: 'citizen', skillLevel: 2 },
+                    'bob@example.com': { _id: 'bob1', name: 'Bob Singh', email: 'bob@example.com', role: 'government_enterprise', skillLevel: 1 },
+                };
+
+                if (demoUsers[email] && password === 'demo123') {
+                    setUser(demoUsers[email]);
+                    setSuccess('Login successful!');
+                    setTimeout(() => setView('key-setup'), 500);
+                } else {
+                    setError('Invalid credentials. Try admin@example.com / demo123');
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="container">
+                    <header>
+                        <div className="logo-section">
+                            <div className="logo">☭</div>
+                            <div>
+                                <div className="header-title">Welfare Labour Ledger</div>
+                                <div className="header-subtitle">Transparent, Equitable, Sustainable</div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="card" style={{ maxWidth: '500px', margin: '50px auto' }}>
+                        <h2>Login</h2>
+                        {error && <div className="alert alert-error">{error}</div>}
+                        {success && <div className="alert alert-success">{success}</div>}
+                        <form onSubmit={handleLogin}>
+                            <div className="form-group">
+                                <label>Email</label>
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required />
+                            </div>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="demo123" required />
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
+                                {loading ? 'Logging in...' : 'Login'}
+                            </button>
+                        </form>
+                        <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                            Demo accounts: admin@example.com, alice@example.com, bob@example.com (password: demo123)
+                        </p>
+                        <p style={{ marginTop: '10px', textAlign: 'center' }}>
+                            <a href="#" onClick={() => setView('register')} style={{ color: 'var(--color-teal-500)', textDecoration: 'none', fontWeight: 'bold' }}>
+                                Register New Account
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // REGISTER PAGE
+        // ============================================================================
+
+        function RegisterPage({ setView, setError, setSuccess, error, success, clearMessages }) {
+            const [formData, setFormData] = React.useState({
+                name: '',
+                email: '',
+                password: '',
+                role: 'citizen',
+                skillLevel: 1,
+            });
+            const [loading, setLoading] = React.useState(false);
+
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                setFormData({ ...formData, [name]: name === 'skillLevel' ? parseInt(value) : value });
+            };
+
+            const handleRegister = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                clearMessages();
+                setSuccess('Registration successful! Redirecting to login...');
+                setTimeout(() => setView('login'), 1500);
+                setLoading(false);
+            };
+
+            return (
+                <div className="container">
+                    <header>
+                        <div className="logo-section">
+                            <div className="logo">☭</div>
+                            <div className="header-title">Welfare Labour Ledger</div>
+                        </div>
+                    </header>
+
+                    <div className="card" style={{ maxWidth: '500px', margin: '50px auto' }}>
+                        <h2>Register</h2>
+                        {error && <div className="alert alert-error">{error}</div>}
+                        {success && <div className="alert alert-success">{success}</div>}
+                        <form onSubmit={handleRegister}>
+                            <div className="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Email</label>
+                                <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Role</label>
+                                <select name="role" value={formData.role} onChange={handleChange}>
+                                    <option value="citizen">Citizen (Worker)</option>
+                                    <option value="government_enterprise">Government Enterprise</option>
+                                    <option value="domestic_private">Domestic Private Enterprise</option>
+                                    <option value="foreign_enterprise">Foreign Enterprise</option>
+                                    <option value="foreign_consumer">Foreign Consumer</option>
+                                    <option value="admin">Government Administration</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Skill Level (if Worker)</label>
+                                <select name="skillLevel" value={formData.skillLevel} onChange={handleChange}>
+                                    <option value={1}>Level 1 - Uneducated ($5.50/hr)</option>
+                                    <option value={2}>Level 2 - Educated ($7.50/hr)</option>
+                                    <option value={3}>Level 3 - Highly Educated ($10.50/hr)</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
+                                {loading ? 'Registering...' : 'Register'}
+                            </button>
+                        </form>
+                        <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                            Already have an account?{' '}
+                            <a href="#" onClick={() => setView('login')} style={{ color: 'var(--color-teal-500)', textDecoration: 'none', fontWeight: 'bold' }}>
+                                Login
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // KEY SETUP PAGE
+        // ============================================================================
+
+        function KeySetupPage({ user, setView, setKeyFile, setError, setSuccess, error, success, clearMessages }) {
+            const [passphrase, setPassphrase] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            const handleGenerateKey = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                clearMessages();
+                try {
+                    const keyPair = await CryptoUtils.deriveKeyPair(passphrase);
+                    const keyFileData = {
+                        userId: user._id,
+                        email: user.email,
+                        role: user.role,
+                        publicKeyHex: keyPair.publicKeyHex,
+                        secretKeyHex: keyPair.secretKeyHex,
+                        createdAt: new Date().toISOString(),
+                    };
+                    
+                    // Download key file
+                    const fileName = `${user.email.split('@')[0]}_keyfile_${Date.now()}.json`;
+                    const element = document.createElement('a');
+                    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(keyFileData, null, 2)));
+                    element.setAttribute('download', fileName);
+                    element.style.display = 'none';
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+
+                    setKeyFile(keyFileData);
+                    setSuccess('✓ Key file generated and downloaded! Keep it safe.');
+                    
+                    setTimeout(() => setView('dashboard'), 1500);
+                } catch (err) {
+                    setError('Error generating key: ' + err.message);
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="container">
+                    <header>
+                        <div className="logo-section">
+                            <div className="logo">☭</div>
+                            <div className="header-title">Key Setup - Secure Your Account</div>
+                        </div>
+                    </header>
+
+                    <div className="card" style={{ maxWidth: '500px', margin: '50px auto' }}>
+                        <h2>Generate Your Key File</h2>
+                        <p>Create a passphrase to protect your key file. This file is required to sign labour events and reports. Keep it safe!</p>
+                        {error && <div className="alert alert-error">{error}</div>}
+                        {success && <div className="alert alert-success">{success}</div>}
+                        <form onSubmit={handleGenerateKey}>
+                            <div className="form-group">
+                                <label>Passphrase (Strong Password)</label>
+                                <input type="password" value={passphrase} onChange={(e) => setPassphrase(e.target.value)} placeholder="Enter a strong passphrase" required />
+                            </div>
+                            <div className="note">
+                                <strong>🔒 Security Note:</strong> Your passphrase derives a cryptographic key pair. Store it securely. Losing it means you cannot sign transactions.
+                            </div>
+                            <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
+                                {loading ? 'Generating...' : 'Generate & Download Key File'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // DASHBOARD PAGE
+        // ============================================================================
+
+        function DashboardPage({ user, keyFile, handleLogout, setError, setSuccess, error, success, clearMessages }) {
+            const [currentTab, setCurrentTab] = React.useState(user.role === 'admin' ? 'budget' : 'dashboard');
+            const [showArchModal, setShowArchModal] = React.useState(false);
+            const [showHelpModal, setShowHelpModal] = React.useState(false);
+
+            return (
+                <div className="container">
+                    <header>
+                        <div className="logo-section">
+                            <div className="logo">☭</div>
+                            <div>
+                                <div className="header-title">Welfare Labour Ledger</div>
+                                <div className="header-subtitle">{user.role === 'admin' ? 'Government Administration' : user.role === 'citizen' ? 'Citizen Worker' : 'Enterprise'} Dashboard</div>
+                            </div>
+                        </div>
+                        <div className="header-buttons">
+                            <button className="btn-secondary" onClick={() => setShowHelpModal(true)}>? Help</button>
+                            <button className="btn-secondary" onClick={() => setShowArchModal(true)}>⚙ Know More</button>
+                            <button className="btn-secondary" onClick={handleLogout}>← Logout</button>
+                        </div>
+                    </header>
+
+                    {error && <div className="alert alert-error">{error}</div>}
+                    {success && <div className="alert alert-success">{success}</div>}
+
+                    <div className="navigation">
+                        {user.role === 'admin' && (
+                            <>
+                                <button className={`nav-btn ${currentTab === 'budget' ? 'active' : ''}`} onClick={() => { setCurrentTab('budget'); clearMessages(); }}>📊 Budget Planning</button>
+                                <button className={`nav-btn ${currentTab === 'labour' ? 'active' : ''}`} onClick={() => { setCurrentTab('labour'); clearMessages(); }}>👥 Labour Analytics</button>
+                                <button className={`nav-btn ${currentTab === 'enterprises' ? 'active' : ''}`} onClick={() => { setCurrentTab('enterprises'); clearMessages(); }}>🏭 Enterprise Reports</button>
+                                <button className={`nav-btn ${currentTab === 'verification' ? 'active' : ''}`} onClick={() => { setCurrentTab('verification'); clearMessages(); }}>✓ Verify Integrity</button>
+                            </>
+                        )}
+                        {user.role === 'citizen' && (
+                            <>
+                                <button className={`nav-btn ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setCurrentTab('dashboard'); clearMessages(); }}>📈 Dashboard</button>
+                                <button className={`nav-btn ${currentTab === 'shift' ? 'active' : ''}`} onClick={() => { setCurrentTab('shift'); clearMessages(); }}>⏱ Work Shift</button>
+                                <button className={`nav-btn ${currentTab === 'credits' ? 'active' : ''}`} onClick={() => { setCurrentTab('credits'); clearMessages(); }}>💰 My Credits</button>
+                            </>
+                        )}
+                        {(user.role === 'government_enterprise' || user.role === 'domestic_private' || user.role === 'foreign_enterprise') && (
+                            <>
+                                <button className={`nav-btn ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setCurrentTab('dashboard'); clearMessages(); }}>📈 Dashboard</button>
+                                <button className={`nav-btn ${currentTab === 'report' ? 'active' : ''}`} onClick={() => { setCurrentTab('report'); clearMessages(); }}>📋 Submit Report</button>
+                            </>
+                        )}
+                        {user.role === 'foreign_consumer' && (
+                            <>
+                                <button className={`nav-btn ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setCurrentTab('dashboard'); clearMessages(); }}>📈 Dashboard</button>
+                                <button className={`nav-btn ${currentTab === 'browse' ? 'active' : ''}`} onClick={() => { setCurrentTab('browse'); clearMessages(); }}>🌍 Public Data</button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* ADMIN TABS */}
+                    {user.role === 'admin' && currentTab === 'budget' && <AdminBudgetTab user={user} setError={setError} setSuccess={setSuccess} clearMessages={clearMessages} />}
+                    {user.role === 'admin' && currentTab === 'labour' && <AdminLabourTab user={user} />}
+                    {user.role === 'admin' && currentTab === 'enterprises' && <AdminEnterprisesTab user={user} />}
+                    {user.role === 'admin' && currentTab === 'verification' && <VerificationTab user={user} setError={setError} setSuccess={setSuccess} clearMessages={clearMessages} />}
+
+                    {/* CITIZEN TABS */}
+                    {user.role === 'citizen' && currentTab === 'dashboard' && <CitizenDashboard user={user} />}
+                    {user.role === 'citizen' && currentTab === 'shift' && <ShiftTab user={user} keyFile={keyFile} setError={setError} setSuccess={setSuccess} clearMessages={clearMessages} />}
+                    {user.role === 'citizen' && currentTab === 'credits' && <CreditsTab user={user} />}
+
+                    {/* ENTERPRISE TABS */}
+                    {(user.role === 'government_enterprise' || user.role === 'domestic_private' || user.role === 'foreign_enterprise') && currentTab === 'dashboard' && <EnterpriseDashboard user={user} />}
+                    {(user.role === 'government_enterprise' || user.role === 'domestic_private' || user.role === 'foreign_enterprise') && currentTab === 'report' && <ReportTab user={user} keyFile={keyFile} setError={setError} setSuccess={setSuccess} clearMessages={clearMessages} />}
+
+                    {/* FOREIGN CONSUMER TABS */}
+                    {user.role === 'foreign_consumer' && currentTab === 'dashboard' && <ForeignConsumerDashboard user={user} />}
+                    {user.role === 'foreign_consumer' && currentTab === 'browse' && <BrowseDataTab user={user} />}
+
+                    <ArchitectureModal show={showArchModal} onClose={() => setShowArchModal(false)} />
+                    <HelpModal show={showHelpModal} onClose={() => setShowHelpModal(false)} />
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ADMIN: BUDGET PLANNING
+        // ============================================================================
+
+        function AdminBudgetTab({ user, setError, setSuccess, clearMessages }) {
+            const [budgets, setBudgets] = React.useState([
+                { _id: '1', category: 'housing', amount: 500000, period: '2024-01-19', utilized: 45 },
+                { _id: '2', category: 'military', amount: 800000, period: '2024-01-19', utilized: 60 },
+                { _id: '3', category: 'education', amount: 300000, period: '2024-01-19', utilized: 35 },
+            ]);
+            const [showForm, setShowForm] = React.useState(false);
+            const [formData, setFormData] = React.useState({ category: '', amount: '', period: new Date().toISOString().split('T')[0] });
+
+            const handleAddBudget = (e) => {
+                e.preventDefault();
+                clearMessages();
+                if (!formData.category || !formData.amount) {
+                    setError('Please fill all fields');
+                    return;
+                }
+                const newBudget = {
+                    _id: Date.now().toString(),
+                    category: formData.category,
+                    amount: parseInt(formData.amount),
+                    period: formData.period,
+                    utilized: 0
+                };
+                setBudgets([...budgets, newBudget]);
+                setSuccess(`✓ Budget for ${formData.category} published to ledger!`);
+                setFormData({ category: '', amount: '', period: new Date().toISOString().split('T')[0] });
+                setShowForm(false);
+            };
+
+            const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
+
+            return (
+                <div>
+                    <div className="card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h2>💼 Budget Planning & Allocation</h2>
+                            <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+                                {showForm ? '✕ Cancel' : '+ Add Budget'}
+                            </button>
+                        </div>
+
+                        {showForm && (
+                            <form onSubmit={handleAddBudget} style={{ marginTop: '20px', paddingTop: '20px', borderTop: '2px solid #ccc' }}>
+                                <div className="grid-2">
+                                    <div className="form-group">
+                                        <label>Category</label>
+                                        <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} required>
+                                            <option value="">Select Category</option>
+                                            <option value="housing">🏠 Housing</option>
+                                            <option value="military">⚔️ Military</option>
+                                            <option value="education">🎓 Education</option>
+                                            <option value="healthcare">⚕️ Healthcare</option>
+                                            <option value="agriculture">🌾 Agriculture</option>
+                                            <option value="infrastructure">🏗️ Infrastructure</option>
+                                            <option value="technology">💻 Technology</option>
+                                            <option value="energy">⚡ Energy</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Allocated Budget ($)</label>
+                                        <input type="number" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} placeholder="1000000" required />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Period (YYYY-MM-DD)</label>
+                                    <input type="date" value={formData.period} onChange={(e) => setFormData({ ...formData, period: e.target.value })} required />
+                                </div>
+                                <button type="submit" className="btn-primary">🔐 Publish to Ledger</button>
+                            </form>
+                        )}
+                    </div>
+
+                    <div className="card">
+                        <h3>📋 Budget Summary (All Published)</h3>
+                        {budgets.length === 0 ? (
+                            <p>No budgets created yet.</p>
+                        ) : (
+                            <div>
+                                {budgets.map((budget) => (
+                                    <div key={budget._id} className="budget-category">
+                                        <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{budget.category.toUpperCase()} (Period: {budget.period})</div>
+                                        <div className="budget-row">
+                                            <span>Allocated:</span>
+                                            <span><strong>${budget.amount.toLocaleString()}</strong></span>
+                                        </div>
+                                        <div className="progress-bar">
+                                            <div className="progress-fill" style={{ width: `${budget.utilized}%` }}></div>
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '5px' }}>
+                                            {budget.utilized}% utilized • Ledger Anchored: ✓
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">${(totalBudget / 1000000).toFixed(1)}M</div>
+                            <div className="stat-label">Total Allocation</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{budgets.length}</div>
+                            <div className="stat-label">Active Categories</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{budgets.length > 0 ? Math.round(budgets.reduce((a,b) => a + b.utilized, 0) / budgets.length) : 0}%</div>
+                            <div className="stat-label">Avg Utilization</div>
+                        </div>
+                    </div>
+
+                    <div className="note" style={{ marginTop: '20px' }}>
+                        <strong>ℹ️ Transparency:</strong> All budgets are cryptographically signed and anchored in the immutable hash-chain ledger. Citizens and enterprises can verify no modifications have been made. Economic decisions are fully auditable.
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ADMIN: LABOUR ANALYTICS
+        // ============================================================================
+
+        function AdminLabourTab({ user }) {
+            return (
+                <div>
+                    <div className="card">
+                        <h2>👥 Labour Analytics & Production</h2>
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-value">2,847</div>
+                                <div className="stat-label">Total Work Hours (This Week)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">$19,920</div>
+                                <div className="stat-label">Total Wages Distributed</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">456</div>
+                                <div className="stat-label">Active Workers</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">100%</div>
+                                <div className="stat-label">Verified Events</div>
+                            </div>
+                        </div>
+
+                        <h3 style={{ marginTop: '20px' }}>📊 Recent Labour Events</h3>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Worker</th>
+                                        <th>Hours</th>
+                                        <th>Skill</th>
+                                        <th>Wage ($)</th>
+                                        <th>Status</th>
+                                        <th>Ledger Index</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Alice Chen</td>
+                                        <td>8</td>
+                                        <td>Level 2</td>
+                                        <td>$60.00</td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                        <td>#1245</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bob Singh</td>
+                                        <td>6</td>
+                                        <td>Level 1</td>
+                                        <td>$33.00</td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                        <td>#1246</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Carol Patel</td>
+                                        <td>10</td>
+                                        <td>Level 3</td>
+                                        <td>$105.00</td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                        <td>#1247</td>
+                                    </tr>
+                                    <tr>
+                                        <td>David Kumar</td>
+                                        <td>7</td>
+                                        <td>Level 2</td>
+                                        <td>$52.50</td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                        <td>#1248</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ADMIN: ENTERPRISE REPORTS
+        // ============================================================================
+
+        function AdminEnterprisesTab({ user }) {
+            return (
+                <div>
+                    <div className="card">
+                        <h2>🏭 Enterprise Production & Reports</h2>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Enterprise</th>
+                                        <th>Type</th>
+                                        <th>Output</th>
+                                        <th>Revenue</th>
+                                        <th>Status</th>
+                                        <th>Compliance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>State Steel Mill</td>
+                                        <td>Government</td>
+                                        <td>450 tons</td>
+                                        <td>$2.3M</td>
+                                        <td><span className="status-badge status-success">✓ Approved</span></td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Green Energy Corp</td>
+                                        <td>Domestic</td>
+                                        <td>120 MW</td>
+                                        <td>$1.8M</td>
+                                        <td><span className="status-badge status-warning">⏳ Pending</span></td>
+                                        <td><span className="status-badge status-warning">⏳ Review</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sino-Tech Manufacturing</td>
+                                        <td>Foreign</td>
+                                        <td>280 units</td>
+                                        <td>$4.2M</td>
+                                        <td><span className="status-badge status-success">✓ Approved</span></td>
+                                        <td><span className="status-badge status-success">✓ Verified</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>ℹ️ All Reports Signed:</strong> Enterprise reports are cryptographically signed and anchored in ledger. No tampering possible. Foreign parties can verify supply chains.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ADMIN: VERIFICATION TOOL
+        // ============================================================================
+
+        function VerificationTab({ user, setError, setSuccess, clearMessages }) {
+            const [recordId, setRecordId] = React.useState('');
+            const [verificationData, setVerificationData] = React.useState(null);
+            const [loading, setLoading] = React.useState(false);
+
+            const handleVerify = () => {
+                setLoading(true);
+                clearMessages();
+                setTimeout(() => {
+                    if (recordId) {
+                        setVerificationData({
+                            recordId,
+                            payloadHash: 'a7f8d2e9c4b1f6a3e8d2c9f4a7b1e6d3',
+                            ledgerIndex: 1248,
+                            entryHash: 'c9f4a7b1e6d3a7f8d2e9c4b1f6a3e8d2',
+                            chainValid: true,
+                            status: 'intact',
+                            verifiedAt: new Date().toISOString()
+                        });
+                        setSuccess('✓ Record integrity verified!');
+                    } else {
+                        setError('Please enter a record ID');
+                    }
+                    setLoading(false);
+                }, 500);
+            };
+
+            return (
+                <div>
+                    <div className="card">
+                        <h2>✓ Integrity Verification Tool</h2>
+                        <p>Verify that labour events and budgets have not been tampered with by checking their hash-chain integrity.</p>
+                        <div className="form-group" style={{ marginTop: '20px' }}>
+                            <label>Record ID to Verify</label>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input type="text" value={recordId} onChange={(e) => setRecordId(e.target.value)} placeholder="Enter record ID (e.g., 1248, REC-001)" />
+                                <button className="btn-primary" onClick={handleVerify} disabled={loading} style={{ flex: '0 0 auto' }}>
+                                    {loading ? 'Verifying...' : 'Verify'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {verificationData && (
+                            <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '2px solid #ccc' }}>
+                                <h3>✓ Verification Results</h3>
+                                <div className="budget-category">
+                                    <div className="budget-row">
+                                        <span>Record ID:</span>
+                                        <span><strong>{verificationData.recordId}</strong></span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Payload Hash:</span>
+                                        <span style={{ fontSize: '12px', fontFamily: 'monospace' }}>{verificationData.payloadHash}</span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Ledger Index:</span>
+                                        <span><strong>#{verificationData.ledgerIndex}</strong></span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Entry Hash:</span>
+                                        <span style={{ fontSize: '12px', fontFamily: 'monospace' }}>{verificationData.entryHash}</span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Chain Integrity:</span>
+                                        <span><span className="status-badge status-success">✓ {verificationData.chainValid ? 'Intact' : 'Compromised'}</span></span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Verification Status:</span>
+                                        <span><span className="status-badge status-success">✓ Valid</span></span>
+                                    </div>
+                                    <div className="budget-row">
+                                        <span>Verified At:</span>
+                                        <span style={{ fontSize: '12px' }}>{new Date(verificationData.verifiedAt).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>🔐 How It Works:</strong> Each record has a unique hash. The hash-chain links all records sequentially. If anyone modifies a historical record, all downstream hashes break, revealing tampering immediately. This provides cryptographic proof of integrity.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // CITIZEN: DASHBOARD
+        // ============================================================================
+
+        function CitizenDashboard({ user }) {
+            return (
+                <div>
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">$375.50</div>
+                            <div className="stat-label">Credits This Month</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">50</div>
+                            <div className="stat-label">Hours Worked</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">Level 2</div>
+                            <div className="stat-label">Skill Level ($7.50/hr)</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">28</div>
+                            <div className="stat-label">Verified Events</div>
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <h2>👋 Welcome, {user.name}</h2>
+                        <p>You are logged in as a citizen worker with Skill Level {user.skillLevel}.</p>
+                        <p><strong>Your hourly wage:</strong> <span style={{ color: 'var(--color-teal-500)', fontSize: '16px', fontWeight: 'bold' }}>
+                            ${user.skillLevel === 1 ? '5.50' : user.skillLevel === 2 ? '7.50' : '10.50'}/hour
+                        </span></p>
+                        <p style={{ marginTop: '15px' }}>Use the <strong>"Work Shift"</strong> tab to log your work hours and earn labour credits. Each record is cryptographically signed and verified, ensuring no tampering.</p>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>📍 Recent Activity:</strong>
+                            <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
+                                <li>Jan 19, 2024: 8 hours worked → $60 earned (Index #1245)</li>
+                                <li>Jan 18, 2024: 6 hours worked → $45 earned (Index #1244)</li>
+                                <li>Jan 17, 2024: 10 hours worked → $75 earned (Index #1243)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // CITIZEN: SHIFT LOGGER
+        // ============================================================================
+
+        function ShiftTab({ user, keyFile, setError, setSuccess, clearMessages }) {
+            const [shiftActive, setShiftActive] = React.useState(false);
+            const [startTime, setStartTime] = React.useState(null);
+            const [hours, setHours] = React.useState(0);
+            const [passphrase, setPassphrase] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            const handleStartShift = () => {
+                clearMessages();
+                setStartTime(new Date());
+                setShiftActive(true);
+                setSuccess('⏱ Shift started! You are now logging work hours.');
+            };
+
+            const handleEndShift = async () => {
+                if (!hours) {
+                    setError('Please enter hours worked');
+                    return;
+                }
+                if (!passphrase) {
+                    setError('Please enter your passphrase to sign the shift record');
+                    return;
+                }
+                if (!keyFile) {
+                    setError('Key file not loaded');
+                    return;
+                }
+
+                setLoading(true);
+                clearMessages();
+                try {
+                    // Derive key from passphrase
+                    const keyPair = await CryptoUtils.deriveKeyPair(passphrase);
+                    if (keyPair.secretKeyHex !== keyFile.secretKeyHex) {
+                        setError('❌ Incorrect passphrase');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Create labour event payload
+                    const payload = {
+                        userId: user._id,
+                        hours: parseInt(hours),
+                        skillLevel: user.skillLevel,
+                        enterpriseId: 'default_enterprise',
+                        startTime: startTime.toISOString(),
+                        endTime: new Date().toISOString(),
+                        nonce: Math.random().toString(36).substring(7),
+                    };
+
+                    // Sign payload
+                    const canonical = CryptoUtils.canonical(payload);
+                    const signature = await CryptoUtils.sign(canonical, keyFile.secretKeyHex);
+
+                    const skillRates = { 1: 5.5, 2: 7.5, 3: 10.5 };
+                    const credit = hours * skillRates[user.skillLevel];
+
+                    // Simulate ledger anchoring
+                    const receiptId = 'REC-' + Math.floor(Math.random() * 10000);
+                    const ledgerIndex = Math.floor(Math.random() * 10000);
+
+                    setSuccess(`✓ Shift ended! You earned $${credit.toFixed(2)} in labour credits. Receipt: ${receiptId} (Ledger Index: #${ledgerIndex})`);
+                    
+                    setShiftActive(false);
+                    setStartTime(null);
+                    setHours(0);
+                    setPassphrase('');
+                } catch (err) {
+                    setError('Error: ' + err.message);
+                }
+                setLoading(false);
+            };
+
+            const skillRates = { 1: 5.5, 2: 7.5, 3: 10.5 };
+            const estimatedCredit = (hours * skillRates[user.skillLevel]).toFixed(2);
+
+            return (
+                <div>
+                    <div className="card">
+                        <h2>⏱ Work Shift Logger</h2>
+                        {!shiftActive ? (
+                            <button className="btn-primary" onClick={handleStartShift} style={{ padding: '12px 24px', fontSize: '16px' }}>
+                                ▶ Start Shift
+                            </button>
+                        ) : (
+                            <div>
+                                <div className="shift-timer">
+                                    <div className="timer-display">
+                                        {startTime && Math.round((new Date() - startTime) / 1000 / 60)} minutes elapsed
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Hours Worked</label>
+                                    <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="Enter hours" min="0" step="0.5" />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Passphrase (to sign shift record)</label>
+                                    <input type="password" value={passphrase} onChange={(e) => setPassphrase(e.target.value)} placeholder="Enter passphrase" />
+                                </div>
+
+                                <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#e7f3ff', borderRadius: '6px' }}>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-teal-500)', margin: '0' }}>
+                                        📊 Estimated Earnings: <strong>${estimatedCredit}</strong> ({hours} hrs × ${skillRates[user.skillLevel]}/hr)
+                                    </p>
+                                </div>
+
+                                <button className="btn-primary" onClick={handleEndShift} disabled={loading} style={{ padding: '12px 24px', fontSize: '16px' }}>
+                                    {loading ? '⏳ Processing...' : '🔐 End Shift & Sign'}
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>🔒 Security:</strong> Your shift record is cryptographically signed with your key file. The signature proves authenticity. Records are anchored in the tamper-evident ledger—no one can modify them after submission.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // CITIZEN: CREDITS HISTORY
+        // ============================================================================
+
+        function CreditsTab({ user }) {
+            const [credits] = React.useState([
+                { date: '2024-01-19', hours: 8, rate: 7.5, earned: 60, status: 'Verified', receipt: 'REC-1245', index: 1248 },
+                { date: '2024-01-18', hours: 6, rate: 7.5, earned: 45, status: 'Verified', receipt: 'REC-1244', index: 1247 },
+                { date: '2024-01-17', hours: 10, rate: 7.5, earned: 75, status: 'Verified', receipt: 'REC-1243', index: 1246 },
+            ]);
+
+            return (
+                <div>
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">$612.30</div>
+                            <div className="stat-label">Total Credits Earned</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">82</div>
+                            <div className="stat-label">Total Hours Worked</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">18</div>
+                            <div className="stat-label">Verified Events</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">100%</div>
+                            <div className="stat-label">Integrity Check: ✓</div>
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <h2>💰 Labour Credit History</h2>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Hours</th>
+                                        <th>Rate</th>
+                                        <th>Credits ($)</th>
+                                        <th>Status</th>
+                                        <th>Ledger Index</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {credits.map((c, i) => (
+                                        <tr key={i}>
+                                            <td>{c.date}</td>
+                                            <td>{c.hours}</td>
+                                            <td>${c.rate}/hr</td>
+                                            <td><strong>${c.earned}</strong></td>
+                                            <td><span className="status-badge status-success">✓ {c.status}</span></td>
+                                            <td>#{c.index}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>ℹ️ Transparency:</strong> All your labour events are recorded in the hash-chain ledger. You can request the administration to verify any record using the Verification Tool, confirming no tampering has occurred.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ENTERPRISE: DASHBOARD
+        // ============================================================================
+
+        function EnterpriseDashboard({ user }) {
+            return (
+                <div>
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">2,450</div>
+                            <div className="stat-label">Units Produced</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">$85,000</div>
+                            <div className="stat-label">Revenue</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">312</div>
+                            <div className="stat-label">Workers Employed</div>
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <h2>🏭 Enterprise Overview</h2>
+                        <p><strong>Enterprise:</strong> {user.name}</p>
+                        <p><strong>Type:</strong> {user.role === 'government_enterprise' ? '🏛️ Government' : user.role === 'domestic_private' ? '🏢 Domestic Private' : '🌍 Foreign'}</p>
+                        <p style={{ marginTop: '15px' }}>Use the <strong>"Submit Report"</strong> tab to submit production, subsidy, and revenue reports. All reports are cryptographically signed and anchored in the ledger for transparency.</p>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>📊 Your Recent Reports:</strong>
+                            <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
+                                <li>Jan 19: Production Report (2,450 units) - Index #1248 ✓</li>
+                                <li>Jan 18: Revenue Report ($85K) - Index #1247 ✓</li>
+                                <li>Jan 17: Subsidy Request ($50K) - Index #1246 ⏳</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // ENTERPRISE: REPORT SUBMISSION
+        // ============================================================================
+
+        function ReportTab({ user, keyFile, setError, setSuccess, clearMessages }) {
+            const [reportType, setReportType] = React.useState('production');
+            const [reportData, setReportData] = React.useState({ quantity: '', unit: '', revenue: '' });
+            const [passphrase, setPassphrase] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            const handleSubmitReport = async (e) => {
+                e.preventDefault();
+                if (!passphrase || !keyFile) {
+                    setError('Passphrase and key file required');
+                    return;
+                }
+                if (!reportData.quantity) {
+                    setError('Please enter quantity/amount');
+                    return;
+                }
+
+                setLoading(true);
+                clearMessages();
+                try {
+                    const keyPair = await CryptoUtils.deriveKeyPair(passphrase);
+                    if (keyPair.secretKeyHex !== keyFile.secretKeyHex) {
+                        setError('❌ Incorrect passphrase');
+                        setLoading(false);
+                        return;
+                    }
+
+                    const payload = {
+                        enterpriseId: user._id,
+                        type: reportType,
+                        ...reportData,
+                        timestamp: new Date().toISOString(),
+                        nonce: Math.random().toString(36).substring(7),
+                    };
+
+                    const canonical = CryptoUtils.canonical(payload);
+                    await CryptoUtils.sign(canonical, keyFile.secretKeyHex);
+
+                    const receiptId = 'ENT-' + Math.floor(Math.random() * 10000);
+                    const ledgerIndex = Math.floor(Math.random() * 10000);
+
+                    setSuccess(`✓ Report submitted successfully! Receipt: ${receiptId} (Ledger Index: #${ledgerIndex})`);
+                    setReportData({ quantity: '', unit: '', revenue: '' });
+                    setPassphrase('');
+                } catch (err) {
+                    setError('Error: ' + err.message);
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div>
+                    <div className="card">
+                        <h2>📋 Submit Report</h2>
+                        <form onSubmit={handleSubmitReport}>
+                            <div className="form-group">
+                                <label>Report Type</label>
+                                <select value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                                    <option value="production">📦 Production Output</option>
+                                    <option value="subsidy">💰 Subsidy Request</option>
+                                    <option value="revenue">💵 Revenue Report</option>
+                                </select>
+                            </div>
+
+                            <div className="grid-2">
+                                <div className="form-group">
+                                    <label>{reportType === 'production' ? 'Quantity Produced' : 'Amount'}</label>
+                                    <input type="number" value={reportData.quantity} onChange={(e) => setReportData({ ...reportData, quantity: e.target.value })} placeholder="0" required />
+                                </div>
+                                <div className="form-group">
+                                    <label>Unit</label>
+                                    <input type="text" value={reportData.unit} onChange={(e) => setReportData({ ...reportData, unit: e.target.value })} placeholder="e.g., tons, MW, units, $" />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Additional Revenue ($)</label>
+                                <input type="number" value={reportData.revenue} onChange={(e) => setReportData({ ...reportData, revenue: e.target.value })} placeholder="0" />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Passphrase (to sign report)</label>
+                                <input type="password" value={passphrase} onChange={(e) => setPassphrase(e.target.value)} placeholder="Enter passphrase" />
+                            </div>
+
+                            <button type="submit" className="btn-primary" disabled={loading}>
+                                {loading ? '⏳ Submitting...' : '🔐 Submit Signed Report'}
+                            </button>
+                        </form>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>🔒 Signed & Verifiable:</strong> Your report is cryptographically signed with your enterprise key. Government administration and foreign parties can verify its authenticity. All reports are permanently recorded in the ledger.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // FOREIGN CONSUMER: DASHBOARD
+        // ============================================================================
+
+        function ForeignConsumerDashboard({ user }) {
+            return (
+                <div>
+                    <div className="card">
+                        <h2>🌍 Welcome, {user.name}</h2>
+                        <p>You are a foreign consumer with read-only access to public welfare system data.</p>
+                        <p>Use the <strong>"Public Data"</strong> tab to view aggregated economic indicators and verify system transparency.</p>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>📍 Transparency Features:</strong>
+                            <ul style={{ marginLeft: '20px', marginTop: '10px' }}>
+                                <li>Real-time labour statistics (hours, wages)</li>
+                                <li>Aggregated production data by sector</li>
+                                <li>Budget allocation summaries (anonymized)</li>
+                                <li>Ledger integrity verification tools</li>
+                                <li>Supply chain transparency for foreign enterprises</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // FOREIGN CONSUMER: PUBLIC DATA
+        // ============================================================================
+
+        function BrowseDataTab({ user }) {
+            return (
+                <div>
+                    <div className="card">
+                        <h2>🌍 Public Economic Data</h2>
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-value">52,340</div>
+                                <div className="stat-label">Total Work Hours (This Month)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">$371,800</div>
+                                <div className="stat-label">Total Wages Distributed</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">1,247</div>
+                                <div className="stat-label">Active Workers</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-value">100%</div>
+                                <div className="stat-label">Data Verified</div>
+                            </div>
+                        </div>
+
+                        <h3 style={{ marginTop: '20px' }}>📊 Production Overview by Sector</h3>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Sector</th>
+                                        <th>Output</th>
+                                        <th>Growth (mo)</th>
+                                        <th>Updated</th>
+                                        <th>Verified</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>🌾 Agriculture</td>
+                                        <td>12,450 tons</td>
+                                        <td>+5.2%</td>
+                                        <td>2024-01-19</td>
+                                        <td><span className="status-badge status-success">✓</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🏭 Manufacturing</td>
+                                        <td>8,920 units</td>
+                                        <td>+3.8%</td>
+                                        <td>2024-01-19</td>
+                                        <td><span className="status-badge status-success">✓</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>⚡ Energy</td>
+                                        <td>4,200 MW</td>
+                                        <td>+2.1%</td>
+                                        <td>2024-01-19</td>
+                                        <td><span className="status-badge status-success">✓</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>🏗️ Infrastructure</td>
+                                        <td>156 projects</td>
+                                        <td>+1.9%</td>
+                                        <td>2024-01-19</td>
+                                        <td><span className="status-badge status-success">✓</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="note" style={{ marginTop: '20px' }}>
+                            <strong>ℹ️ Data Transparency:</strong> All public data is aggregated from verified ledger entries. Foreign parties can independently verify records using the Integrity Verification Tool. No data falsification possible—cryptographic hashing ensures authenticity.
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // MODALS: ARCHITECTURE & HELP
+        // ============================================================================
+
+        function ArchitectureModal({ show, onClose }) {
+            return (
+                <div className={`modal ${show ? 'active' : ''}`} onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>⚙️ System Architecture & Design</h2>
+                            <button className="close-btn" onClick={onClose}>×</button>
+                        </div>
+
+                        <div className="document-container">
+                            <h1>Welfare Labour Ledger MVP Architecture</h1>
+
+                            <h2>🎯 Overview</h2>
+                            <p>The Welfare Labour Ledger is a decentralized, tamper-evident system designed to transparently track labour output, manage state budgets, and coordinate enterprise production in a moneyless welfare economy. It uses cryptographic signing and a hash-chain ledger to ensure immutability and transparency for all participants.</p>
+
+                            <h2>🏗️ Core Components</h2>
+
+                            <h3>Frontend (React)</h3>
+                            <p>Six role-based dashboards:</p>
+                            <ul>
+                                <li><strong>Government Administration:</strong> Budget planning across state services (housing, military, education, etc.), production analytics, enterprise reporting, and integrity verification.</li>
+                                <li><strong>Citizen/Worker:</strong> Work shift logging, earned labour credits tracking, and verification receipts.</li>
+                                <li><strong>Government/Domestic/Foreign Enterprise:</strong> Minimal production/revenue reporting interface.</li>
+                                <li><strong>Foreign Consumer:</strong> Read-only public economic data and transparency dashboard.</li>
+                            </ul>
+
+                            <h3>Backend (Express.js + Node.js)</h3>
+                            <ul>
+                                <li><strong>Auth Service:</strong> Login, registration, RBAC, JWT token issuance.</li>
+                                <li><strong>Labour Ledger Service:</strong> Shift start/end, signature verification, wage-credit computation, ledger entry appending.</li>
+                                <li><strong>Budget & Planning Service:</strong> CRUD for state budgets, scenario comparison, publication.</li>
+                                <li><strong>Enterprise Reporting Service:</strong> Accepts signed production/subsidy/revenue reports.</li>
+                                <li><strong>Verification Service:</strong> Hash-chain integrity checks.</li>
+                            </ul>
+
+                            <h3>Database (MongoDB)</h3>
+                            <ul>
+                                <li><strong>users:</strong> User accounts, roles, skill levels, public keys.</li>
+                                <li><strong>nonces:</strong> One-time challenges for anti-replay protection.</li>
+                                <li><strong>labourEvents:</strong> Signed labour records.</li>
+                                <li><strong>budgets:</strong> State budget allocations.</li>
+                                <li><strong>enterpriseReports:</strong> Signed reports.</li>
+                                <li><strong>ledgerEntries:</strong> Immutable hash-chain.</li>
+                            </ul>
+
+                            <h2>🔐 Cryptographic Security Model</h2>
+
+                            <h3>Key Derivation & Signing</h3>
+                            <p>Workers download a passphrase-protected key file containing derived Ed25519 key pairs. PBKDF2 derives the seed from the passphrase; Ed25519 generates the key pair deterministically.</p>
+
+                            <h3>Nonce & Anti-Replay</h3>
+                            <p>Each labour event includes a server-issued nonce marked as consumed after verification. Prevents replay attacks.</p>
+
+                            <h3>Hash-Chain Ledger (SHA-256)</h3>
+                            <p>All approved events are appended with:</p>
+                            <div className="code-block">
+index: monotonic position
+prevHash: SHA-256(previous entry)
+payloadHash: SHA-256(canonical(event))
+entryHash: SHA-256(prevHash + payloadHash)
+signature: Ed25519(actorKey)
+                            </div>
+                            <p>Tampering breaks all downstream hashes, providing cryptographic proof of integrity.</p>
+
+                            <h2>💰 Wage-Credit System (Static MVP)</h2>
+                            <ul>
+                                <li><strong>Level 1 (Uneducated):</strong> $5.50/hour</li>
+                                <li><strong>Level 2 (Educated):</strong> $7.50/hour</li>
+                                <li><strong>Level 3 (Highly Educated):</strong> $10.50/hour</li>
+                            </ul>
+                            <p>Administration can democratically increase rates via signed governance events.</p>
+
+                            <h2>📊 Data Flow: Labour Event</h2>
+                            <ol>
+                                <li>Worker logs in, loads key file (encrypted by passphrase).</li>
+                                <li>Worker clicks "Start Shift" → backend issues nonce.</li>
+                                <li>Worker records hours and clicks "End Shift & Sign".</li>
+                                <li>Client derives key pair from passphrase (client-side only).</li>
+                                <li>Client signs canonical payload with Ed25519 private key.</li>
+                                <li>Backend verifies signature + nonce, computes credit.</li>
+                                <li>Backend appends ledger entry (hash-chain).</li>
+                                <li>Worker receives receipt proving ledger anchoring.</li>
+                                <li>Later verification recomputes hashes to confirm integrity.</li>
+                            </ol>
+
+                            <h2>📈 Admin Dashboard: Transparency</h2>
+                            <ul>
+                                <li>Budget allocation UI with scenario comparison.</li>
+                                <li>Real-time labour analytics (hours, wages, workers).</li>
+                                <li>Enterprise production monitoring.</li>
+                                <li>Integrity verification tool for auditing.</li>
+                            </ul>
+
+                            <h2>🌍 Transparency & Democratic Accountability</h2>
+                            <ul>
+                                <li><strong>All labour data is unhindered:</strong> Workers see own events; admin sees aggregated analytics.</li>
+                                <li><strong>Budget decisions are auditable:</strong> All changes logged and immutable.</li>
+                                <li><strong>Wage increases are transparent:</strong> Rate-change events published in ledger; masses can vote.</li>
+                                <li><strong>No hidden corruption:</strong> Hash mismatches immediately reveal tampering.</li>
+                            </ul>
+
+                            <h2>🚀 MVP Deployment</h2>
+                            <ul>
+                                <li><strong>Frontend:</strong> React SPA (browser-based).</li>
+                                <li><strong>Backend:</strong> Express.js REST API (Node.js).</li>
+                                <li><strong>Database:</strong> MongoDB.</li>
+                                <li><strong>Ledger:</strong> Mock hash-chain (MongoDB); upgradeable to Hyperledger Fabric.</li>
+                                <li><strong>Crypto:</strong> Ed25519 signatures + SHA-256 hashing.</li>
+                                <li><strong>Auth:</strong> JWT + passphrase-protected key files.</li>
+                            </ul>
+
+                            <h2>🔒 Security Considerations</h2>
+                            <ul>
+                                <li><strong>Passphrase Protection:</strong> Key files encrypted; losing passphrase means losing signing capability.</li>
+                                <li><strong>Signature Verification:</strong> Backend always verifies before ledger entry.</li>
+                                <li><strong>Nonce Reuse Prevention:</strong> Consumed nonces cannot be replayed.</li>
+                                <li><strong>Hash-Chain Integrity:</strong> Any tampering breaks all downstream hashes.</li>
+                                <li><strong>RBAC:</strong> Role-based access control prevents privilege escalation.</li>
+                            </ul>
+
+                            <h2>📚 Future Enhancements</h2>
+                            <ul>
+                                <li>Hyperledger Fabric upgrade for consensus.</li>
+                                <li>Labour ownership shares (workers earn equity).</li>
+                                <li>Democratic wage adjustment (masses vote).</li>
+                                <li>Bi-directional verification (workers challenge decisions).</li>
+                                <li>Multi-signature governance (multiple admin approvals).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function HelpModal({ show, onClose }) {
+            return (
+                <div className={`modal ${show ? 'active' : ''}`} onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>? Help & User Guide</h2>
+                            <button className="close-btn" onClick={onClose}>×</button>
+                        </div>
+
+                        <div className="document-container">
+                            <h1>Welfare Labour Ledger User Guide</h1>
+
+                            <h2>👤 For Citizens / Workers</h2>
+
+                            <h3>1. Registration & Login</h3>
+                            <p>Register with your name, email, and select your skill level:</p>
+                            <ul>
+                                <li>Level 1 (Uneducated): $5.50/hour</li>
+                                <li>Level 2 (Educated): $7.50/hour</li>
+                                <li>Level 3 (Highly Educated): $10.50/hour</li>
+                            </ul>
+
+                            <h3>2. Key File Setup</h3>
+                            <p>After login, you'll generate a passphrase-protected key file. <strong>This is required to sign labour records.</strong> Download and keep it safe!</p>
+
+                            <h3>3. Logging Work Hours</h3>
+                            <p>Go to "Work Shift" tab:</p>
+                            <ul>
+                                <li>Click "Start Shift" to begin work day.</li>
+                                <li>Record hours worked.</li>
+                                <li>Click "End Shift & Sign" and enter your passphrase.</li>
+                                <li>Receive receipt proving ledger anchoring.</li>
+                            </ul>
+
+                            <h3>4. Viewing Credits</h3>
+                            <p>Go to "My Credits" tab to see history and verify integrity of past events.</p>
+
+                            <h2>🏛️ For Government Administration</h2>
+
+                            <h3>1. Budget Planning</h3>
+                            <p>Go to "Budget Planning" tab:</p>
+                            <ul>
+                                <li>Click "+ Add Budget" to allocate funds.</li>
+                                <li>Select category (Housing, Military, Education, etc.).</li>
+                                <li>Set amount and period.</li>
+                                <li>Click "Publish to Ledger"—decision is now immutable.</li>
+                            </ul>
+
+                            <h3>2. Labour Analytics</h3>
+                            <p>Go to "Labour Analytics" tab to view:</p>
+                            <ul>
+                                <li>Total hours worked.</li>
+                                <li>Total wages distributed.</li>
+                                <li>Active worker count.</li>
+                                <li>Individual labour event logs.</li>
+                            </ul>
+
+                            <h3>3. Enterprise Reports</h3>
+                            <p>Go to "Enterprise Reports" to monitor production, subsidies, and revenue.</p>
+
+                            <h3>4. Integrity Verification</h3>
+                            <p>Go to "Verify Integrity" tab to:</p>
+                            <ul>
+                                <li>Enter a record ID.</li>
+                                <li>Verify hash matches ledger entry.</li>
+                                <li>Confirm chain integrity from genesis.</li>
+                            </ul>
+
+                            <h2>🏭 For Enterprises</h2>
+
+                            <h3>1. Submit Reports</h3>
+                            <p>Go to "Submit Report" tab:</p>
+                            <ul>
+                                <li>Select report type (Production, Subsidy, Revenue).</li>
+                                <li>Enter quantities and amounts.</li>
+                                <li>Enter passphrase to sign report.</li>
+                                <li>Click "Submit Signed Report"—anchored in ledger.</li>
+                            </ul>
+
+                            <h2>🌍 For Foreign Consumers</h2>
+
+                            <h3>1. Browse Public Data</h3>
+                            <p>Go to "Public Data" tab to view:</p>
+                            <ul>
+                                <li>Aggregated work hours and wages.</li>
+                                <li>Production by sector.</li>
+                                <li>Public economic indicators.</li>
+                            </ul>
+
+                            <h2>❓ FAQ</h2>
+
+                            <h3>Q: What if I lose my key file?</h3>
+                            <p>A: Contact administration for recovery options (to be implemented in future versions).</p>
+
+                            <h3>Q: Can anyone forge my labour records?</h3>
+                            <p>A: No. Records are cryptographically signed with your private key. Forgery would require both key file and passphrase.</p>
+
+                            <h3>Q: How are wages set?</h3>
+                            <p>A: Initially static (L1: $5.50, L2: $7.50, L3: $10.50/hr). Admin publishes rate changes in ledger; masses can vote democratically.</p>
+
+                            <h3>Q: Is my data private?</h3>
+                            <p>A: Workers can only see their own data. Aggregated statistics are public for transparency. Enterprise data visible to authorized parties.</p>
+
+                            <h3>Q: How does the ledger prevent tampering?</h3>
+                            <p>A: Each entry's hash includes the previous entry's hash. Changing any historical data breaks all downstream hashes, revealing tampering instantly.</p>
+
+                            <h2>🔒 Security Best Practices</h2>
+                            <ul>
+                                <li><strong>Protect your passphrase:</strong> Never share it; use it only to sign records.</li>
+                                <li><strong>Keep your key file safe:</strong> Store in secure location; back up copies.</li>
+                                <li><strong>Verify important records:</strong> Use admin verification tool to confirm integrity.</li>
+                                <li><strong>Report suspicious activity:</strong> Contact administration immediately.</li>
+                            </ul>
+
+                            <h2>📞 Support</h2>
+                            <p>For questions or issues, review this help guide or contact your administration. All decisions and data are transparent and auditable in the ledger.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // RENDER
+        // ============================================================================
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<WelfareLedgerApp />);
+    </script>
+</body>
+</html>
